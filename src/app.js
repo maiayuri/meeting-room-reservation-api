@@ -2,6 +2,8 @@ const express = require('express');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger');
 const reservationRoutes = require('./routes/reservationRoutes');
+const roomRoutes = require('./routes/roomRoutes');
+const { notFoundHandler, errorHandler } = require('./middlewares/errorHandler');
 
 const app = express();
 
@@ -10,5 +12,9 @@ app.use(express.json());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/', reservationRoutes);
+app.use('/', roomRoutes);
+
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 module.exports = app;

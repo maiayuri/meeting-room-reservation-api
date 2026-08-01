@@ -2,13 +2,36 @@
   {
     "id": "1",
     "name": "Sala Alpha",
-    "capacity": 8,
+    "size": "pequena",
+    "capacity": 4,
     "location": "1º andar"
   },
   {
     "id": "2",
     "name": "Sala Beta",
+    "size": "pequena",
     "capacity": 4,
+    "location": "1º andar"
+  },
+  {
+    "id": "3",
+    "name": "Sala Gamma",
+    "size": "grande",
+    "capacity": 10,
     "location": "2º andar"
+  },
+  {
+    "id": "4",
+    "name": "Sala Delta",
+    "size": "grande",
+    "capacity": 12,
+    "location": "2º andar"
+  },
+  {
+    "id": "5",
+    "name": "Sala Épsilon",
+    "size": "grande",
+    "capacity": 10,
+    "location": "3º andar"
   }
 ]

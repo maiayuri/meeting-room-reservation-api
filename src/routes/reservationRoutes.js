@@ -9,6 +9,13 @@ const router = express.Router();
  *   get:
  *     summary: Lista todas as reservas de salas
  *     tags: [Reservas]
+ *     parameters:
+ *       - in: query
+ *         name: roomId
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Filtra as reservas por ID da sala.
  *     responses:
  *       200:
  *         description: Lista de reservas retornada com sucesso.

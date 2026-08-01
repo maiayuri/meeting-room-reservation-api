@@ -1,20 +1,26 @@
 const roomModel = require('../models/roomModel');
 const reservationModel = require('../models/reservationModel');
 
-function getReservations(req, res) {
+function getReservations(req, res, next) {
   try {
-    const reservations = reservationModel.findAll();
+    const { roomId } = req.query;
+    let reservations = reservationModel.findAll();
+
+    if (roomId) {
+      reservations = reservations.filter((reservation) => reservation.roomId === String(roomId));
+    }
+
     return res.status(200).json(reservations);
   } catch (error) {
-    return res.status(500).json({ message: 'Erro interno do servidor.' });
+    return next(error);
   }
 }
 
-function createReservation(req, res) {
+function createReservation(req, res, next) {
   try {
     const { roomId, startDateTime, endDateTime, host } = req.body;
 
-    if (!roomId || !startDateTime || !endDateTime || !host) {
+    if (!roomId || !startDateTime || !endDateTime || !host || !String(host).trim()) {
       return res.status(400).json({
         message:
           'Campos obrigatórios ausentes. Informe roomId, startDateTime, endDateTime e host.',
@@ -50,12 +56,12 @@ function createReservation(req, res) {
       roomId: String(roomId),
       startDateTime: start,
       endDateTime: end,
-      host,
+      host: String(host).trim(),
     });
 
     return res.status(201).json(reservation);
   } catch (error) {
-    return res.status(500).json({ message: 'Erro interno do servidor.' });
+    return next(error);
   }
 }
 

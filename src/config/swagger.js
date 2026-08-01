@@ -89,9 +89,14 @@ const options = {
               type: 'string',
               example: 'Sala Alpha',
             },
+            size: {
+              type: 'string',
+              enum: ['pequena', 'grande'],
+              example: 'pequena',
+            },
             capacity: {
               type: 'integer',
-              example: 8,
+              example: 4,
             },
             location: {
               type: 'string',

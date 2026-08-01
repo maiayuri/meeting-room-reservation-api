@@ -5,25 +5,30 @@ API simples para criação e listagem de reservas de salas de reunião, constru�
 ## Funcionalidades
 
 - Criar uma reserva de sala
-- Listar todas as reservas
+- Listar todas as reservas (com filtro opcional por sala)
+- Listar as salas disponíveis
 
 ## Estrutura
 
 ```
 server.js                      # inicializa o servidor
 src/
-  app.js                       # configuração do Express, Swagger e rotas
+  app.js                       # configuração do Express, Swagger, rotas e middlewares
   models/
     roomModel.js                # leitura das salas (seed)
     reservationModel.js         # armazenamento em memória e checagem de conflito de horário
   controllers/
-    reservationController.js    # regras de validação e status codes
+    reservationController.js    # regras de validação e status codes das reservas
+    roomController.js           # listagem de salas
   routes/
-    reservationRoutes.js        # rotas + documentação Swagger (JSDoc)
+    reservationRoutes.js        # rotas de reservas + documentação Swagger (JSDoc)
+    roomRoutes.js                # rota de salas + documentação Swagger (JSDoc)
+  middlewares/
+    errorHandler.js              # tratamento de erro centralizado e handler de rota 404
   config/
     swagger.js                  # schemas do Swagger (Room, Reservation, ReservationInput, Error)
   data/
-    rooms.seed.json             # salas padrão (Sala Alpha e Sala Beta)
+    rooms.seed.json             # salas padrão (5 salas: 2 pequenas e 3 grandes)
 ```
 
 ## Como rodar
@@ -47,9 +52,18 @@ Acesse `http://localhost:3000/api-docs` para a documentação interativa, com os
 
 ## Endpoints
 
+### `GET /salas`
+
+Lista as salas disponíveis para reserva.
+
+| Status | Descrição |
+|---|---|
+| 200 | Lista de salas retornada com sucesso |
+| 500 | Erro interno do servidor |
+
 ### `GET /reservas`
 
-Lista todas as reservas.
+Lista todas as reservas. Aceita o parâmetro opcional `?roomId=` para filtrar por sala.
 
 | Status | Descrição |
 |---|---|
@@ -93,7 +107,14 @@ Cria uma nova reserva.
 
 ## Salas padrão (seed)
 
-| id | name | capacity | location |
-|---|---|---|---|
-| 1 | Sala Alpha | 8 | 1º andar |
-| 2 | Sala Beta | 4 | 2º andar |
+| id | name | size | capacity | location |
+|---|---|---|---|---|
+| 1 | Sala Alpha | pequena | 4 | 1º andar |
+| 2 | Sala Beta | pequena | 4 | 1º andar |
+| 3 | Sala Gamma | grande | 10 | 2º andar |
+| 4 | Sala Delta | grande | 12 | 2º andar |
+| 5 | Sala Épsilon | grande | 10 | 3º andar |
+
+## Tratamento de erros
+
+Requisições para rotas inexistentes retornam `404` com `{ "message": "Rota não encontrada." }`. Erros inesperados são capturados por um middleware central e retornam `500`.
