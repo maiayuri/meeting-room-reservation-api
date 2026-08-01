@@ -1,6 +1,9 @@
-# API de Reserva de Salas de Reunião
+# Reserva de Salas de Reunião
 
-API simples para criação e listagem de reservas de salas de reunião, construída em Node.js/Express seguindo arquitetura MVC.
+Projeto com API (Node.js/Express, arquitetura MVC) e frontend (React + Vite) para criação e listagem de reservas de salas de reunião.
+
+- **API**: descrita neste README.
+- **Frontend**: pasta [`frontend/`](frontend/), com seu próprio [README](frontend/README.md).
 
 ## Funcionalidades
 
@@ -118,3 +121,20 @@ Cria uma nova reserva.
 ## Tratamento de erros
 
 Requisições para rotas inexistentes retornam `404` com `{ "message": "Rota não encontrada." }`. Erros inesperados são capturados por um middleware central e retornam `500`.
+
+## CORS
+
+A API libera requisições de qualquer origem (via `cors`) para permitir o consumo pelo frontend em `http://localhost:5173` durante o desenvolvimento.
+
+## Rodando API + Frontend juntos
+
+```bash
+# terminal 1 — API
+npm install
+npm start          # http://localhost:3000
+
+# terminal 2 — frontend
+cd frontend
+npm install
+npm run dev         # http://localhost:5173
+```
