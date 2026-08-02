@@ -1,5 +1,11 @@
 import { useState } from 'react';
 import { createReservation } from '../api/reservations';
+import RoomPicker from './RoomPicker';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { toastManager } from '@/components/ui/toast';
 
 const INITIAL_FORM = {
   roomId: '',
@@ -14,20 +20,22 @@ const ERROR_MESSAGES = {
   409: 'Já existe uma reserva para essa sala nesse horário.',
 };
 
-export default function ReservationForm({ rooms, onCreated }) {
+export default function ReservationForm({ rooms, reservations, onCreated }) {
   const [form, setForm] = useState(INITIAL_FORM);
   const [submitting, setSubmitting] = useState(false);
-  const [feedback, setFeedback] = useState(null);
 
   function handleChange(event) {
     const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   }
 
+  function handleSelectRoom(roomId) {
+    setForm((prev) => ({ ...prev, roomId }));
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
     setSubmitting(true);
-    setFeedback(null);
 
     try {
       await createReservation({
@@ -36,68 +44,69 @@ export default function ReservationForm({ rooms, onCreated }) {
         endDateTime: new Date(form.endDateTime).toISOString(),
         host: form.host,
       });
-      setFeedback({ type: 'success', message: 'Reserva criada com sucesso.' });
+      toastManager.add({ title: 'Reserva criada com sucesso.', type: 'success' });
       setForm(INITIAL_FORM);
       onCreated();
     } catch (error) {
       const message = ERROR_MESSAGES[error.status] || 'Erro ao criar a reserva. Tente novamente.';
-      setFeedback({ type: 'error', message });
+      toastManager.add({ title: message, type: 'error' });
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <form className="reservation-form" onSubmit={handleSubmit}>
-      <h2>Nova reserva</h2>
+    <Card>
+      <CardHeader>
+        <CardTitle>Nova reserva</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+          <div className="flex flex-col gap-2">
+            <Label>Sala</Label>
+            <RoomPicker
+              rooms={rooms}
+              reservations={reservations}
+              selectedRoomId={form.roomId}
+              onSelect={handleSelectRoom}
+            />
+          </div>
 
-      <label htmlFor="roomId">Sala</label>
-      <select id="roomId" name="roomId" value={form.roomId} onChange={handleChange} required>
-        <option value="" disabled>
-          Selecione uma sala
-        </option>
-        {rooms.map((room) => (
-          <option key={room.id} value={room.id}>
-            {room.name} ({room.size}, {room.capacity} lugares)
-          </option>
-        ))}
-      </select>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="host">Responsável</Label>
+            <Input id="host" name="host" value={form.host} onChange={handleChange} required />
+          </div>
 
-      <label htmlFor="host">Responsável</label>
-      <input
-        id="host"
-        name="host"
-        type="text"
-        value={form.host}
-        onChange={handleChange}
-        required
-      />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="startDateTime">Início</Label>
+              <Input
+                id="startDateTime"
+                name="startDateTime"
+                type="datetime-local"
+                value={form.startDateTime}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="endDateTime">Fim</Label>
+              <Input
+                id="endDateTime"
+                name="endDateTime"
+                type="datetime-local"
+                value={form.endDateTime}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </div>
 
-      <label htmlFor="startDateTime">Início</label>
-      <input
-        id="startDateTime"
-        name="startDateTime"
-        type="datetime-local"
-        value={form.startDateTime}
-        onChange={handleChange}
-        required
-      />
-
-      <label htmlFor="endDateTime">Fim</label>
-      <input
-        id="endDateTime"
-        name="endDateTime"
-        type="datetime-local"
-        value={form.endDateTime}
-        onChange={handleChange}
-        required
-      />
-
-      <button type="submit" disabled={submitting}>
-        {submitting ? 'Criando...' : 'Criar reserva'}
-      </button>
-
-      {feedback && <p className={`feedback feedback--${feedback.type}`}>{feedback.message}</p>}
-    </form>
+          <Button type="submit" loading={submitting} disabled={!form.roomId}>
+            Criar reserva
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 }

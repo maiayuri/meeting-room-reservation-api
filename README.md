@@ -1,6 +1,6 @@
 # Reserva de Salas de Reunião
 
-Projeto com API (Node.js/Express, arquitetura MVC) e frontend (React + Vite) para criação e listagem de reservas de salas de reunião.
+Projeto com API (Node.js/Express, arquitetura MVC) e frontend (React + Vite + Tailwind + [coss ui](https://coss.com/ui)) para criação e listagem de reservas de salas de reunião.
 
 - **API**: descrita neste README.
 - **Frontend**: pasta [`frontend/`](frontend/), com seu próprio [README](frontend/README.md).

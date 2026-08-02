@@ -3,7 +3,9 @@ import { getRooms } from './api/rooms';
 import { getReservations } from './api/reservations';
 import ReservationForm from './components/ReservationForm';
 import ReservationList from './components/ReservationList';
-import './App.css';
+import WeekAgenda from './components/WeekAgenda';
+import { ToastProvider } from '@/components/ui/toast';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 function App() {
   const [rooms, setRooms] = useState([]);
@@ -32,19 +34,36 @@ function App() {
   }, [loadReservations]);
 
   return (
-    <main className="app">
-      <h1>Reserva de Salas de Reunião</h1>
+    <ToastProvider>
+      <main className="mx-auto max-w-6xl px-6 py-10">
+        <h1 className="mb-8 font-heading text-3xl font-semibold text-foreground">
+          Reserva de Salas de Reunião
+        </h1>
 
-      <div className="layout">
-        <ReservationForm rooms={rooms} onCreated={loadReservations} />
-        <ReservationList
-          reservations={reservations}
-          rooms={rooms}
-          loading={loadingReservations}
-          error={reservationsError}
-        />
-      </div>
-    </main>
+        <Tabs defaultValue="agenda">
+          <TabsList>
+            <TabsTrigger value="agenda">Agenda</TabsTrigger>
+            <TabsTrigger value="reservas">Reservas</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="agenda" className="mt-4">
+            <WeekAgenda rooms={rooms} reservations={reservations} onCreated={loadReservations} />
+          </TabsContent>
+
+          <TabsContent value="reservas" className="mt-4">
+            <div className="grid gap-6 lg:grid-cols-[minmax(320px,420px)_1fr] lg:items-start">
+              <ReservationForm rooms={rooms} reservations={reservations} onCreated={loadReservations} />
+              <ReservationList
+                reservations={reservations}
+                rooms={rooms}
+                loading={loadingReservations}
+                error={reservationsError}
+              />
+            </div>
+          </TabsContent>
+        </Tabs>
+      </main>
+    </ToastProvider>
   );
 }
 
